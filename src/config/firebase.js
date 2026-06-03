@@ -10,14 +10,20 @@ if (!admin.apps.length) {
       credential: admin.credential.cert(require(keyPath)),
     });
   }
-  // Option B – GOOGLE_APPLICATION_CREDENTIALS env var (Cloud Run / etc.)
+  // Option B – JSON string env var (Render / Railway / etc.)
+  else if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    admin.initializeApp({
+      credential: admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)),
+    });
+  }
+  // Option C – GOOGLE_APPLICATION_CREDENTIALS env var (Cloud Run / etc.)
   else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
     admin.initializeApp({ credential: admin.credential.applicationDefault() });
   }
   else {
     throw new Error(
       'Firebase credentials not found.\n' +
-      'Either place serviceAccountKey.json in the project root, or set GOOGLE_APPLICATION_CREDENTIALS.'
+      'Place serviceAccountKey.json in the project root, set FIREBASE_SERVICE_ACCOUNT, or set GOOGLE_APPLICATION_CREDENTIALS.'
     );
   }
 }
